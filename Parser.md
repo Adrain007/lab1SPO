@@ -1,6 +1,4 @@
 # lab1SPO
-package lab3;
-
 import java.util.ArrayList;
 
 public class Parser {
@@ -8,7 +6,7 @@ public class Parser {
 	static private ArrayList<Token> tokens;
 	static private Token currentToken;
 	static int i = 0;
-	public static void match() {
+	public void match() {
 		currentToken = tokens.get(i);
 		i++;
 	}
@@ -17,10 +15,10 @@ public class Parser {
 		lang();
 	}
 	
-	public void lang() {
+	private void lang() {
 		expr();
 	}
-	public void expr() {
+	private void expr() {
 		try {
 			VAR();
 		}
@@ -40,23 +38,29 @@ public class Parser {
 			e.printStackTrace();
 		}
 	}
-	public void VAR() throws Exception {
+	private void VAR() throws Exception {
 		match();
 		if(!currentToken.getType().equals("VAR")) {
 			throw new Exception("VAR expected, but "+ currentToken.getType()+" found!!!");
+		} else {
+			System.out.println("vse OK!");
 		}
 	}
 	
-	public void ASSIGN_OP() throws Exception {
+	private void ASSIGN_OP() throws Exception {
 		match();
 		if(!currentToken.getType().equals("ASSIGN_OP")) {
 			throw new Exception("ASSIGN_OP expected, but "+ currentToken.getType()+" found!!!");
+		}else {
+			System.out.println("vse OK!");
 		}
 	}
-	public void DIGIT() throws Exception {
+	private void DIGIT() throws Exception {
 		match();
 		if(!currentToken.getType().equals("DIGIT")) {
 			throw new Exception("DIGIT expected, but "+ currentToken.getType()+" found!!!");
+		}else {
+			System.out.println("vse OK!");
 		}
 	}
 	public void main(String[] args) {
