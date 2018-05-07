@@ -1,4 +1,5 @@
-class Token {
+package Lexer;
+public class Token {
     private String type;
     private String value;
 
@@ -7,10 +8,10 @@ class Token {
         this.value = value;
     }
 
-    String getValue(){
+    public String getValue(){
         return value;
     }
-    String getType(){
+    public String getType(){
         return type;
     }
 }
