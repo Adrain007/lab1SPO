@@ -29,10 +29,20 @@ public class Parser {
         try {
             VAR();
             ASSIGN_OP();
-            DIGIT();
+            value();
         }
         catch(Exception e) {
             e.printStackTrace();
+        }
+    }
+    
+    private void value(){
+        try{
+            VAR();
+        } catch(Exeption e){
+            try{
+                DIGIT();
+            }
         }
     }
 
