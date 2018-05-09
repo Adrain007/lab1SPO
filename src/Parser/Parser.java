@@ -1,23 +1,29 @@
 package Parser;
+
+import Lexer.Lexer;
+import Lexer.Token;
 import java.util.ArrayList;
 import java.util.Scanner;
-
-import Lexer.*;
+import java.util.function.Consumer;
 
 public class Parser {
-    static private ArrayList<Token> tokens;
-    static private Token currentToken;
-    static private int i = 0;
+    private static ArrayList<Token> tokens;
+    private static Token currentToken;
+    private static int i = 0;
+
+    public Parser() {
+    }
 
     private void match() {
         currentToken = tokens.get(i);
-        i++;
+        ++i;
     }
 
-    private void proverka(String s) throws Exception{
-        if(!currentToken.getType().equals(s)) {
-            throw new Exception(s + " expected, but "+ currentToken.getType()+" found!!!");
-        }else {
+    private void check(String s) throws Exception {
+        match();
+        if (!currentToken.getType().equals(s)) {
+            throw new Exception(s + " expected, but " + currentToken.getType() + " found!!!");
+        } else {
             System.out.println("vse OK!");
         }
     }
@@ -28,111 +34,141 @@ public class Parser {
     }
 
     private void lang() {
+        while(i < tokens.size() - 1) {
+            expr();
+        }
+
+    }
+
+    private void expr() {
         try {
-            while (i < tokens.size()) {
-                expr();
-            }
-        } catch (Exception e){
-            e.printStackTrace();
+            assign();
+        } catch (Exception var2) {
+            --i;
+            cycle();
         }
+
     }
 
-    private void expr() throws Exception {
-        assign();
-        //cycle();
-        //print();
-    }
-
-    private void assign() throws Exception{
-        try{
-            VAR();
-            ASSIGN_OP();
+    private void assign() throws Exception {
+        try {
+            check("VAR");
+            check("ASSIGN_OP");
             assign_value();
-        }
-        catch (Exception e){
-            e.printStackTrace();
+        } catch (Exception var2) {
             throw new Exception("Ne assign!!!");
         }
     }
 
-    private void assign_value(){
-        math_expr();
-        //OP();
-        //math_expr();
-    }
+    private void assign_value() {
+        this.math_expr();
 
-    private void math_expr(){
-        add_expr();
-        //math_br();
-    }
-    private void add_expr(){
-        value();
-        currentToken = tokens.get(i);
-        while(!currentToken.getType().equals("END")) {
+        for(currentToken = tokens.get(i); !currentToken.getType().equals("END") && !currentToken.getType().equals("R_B"); currentToken = tokens.get(i)) {
             try {
-                OP();
-                value();
-            } catch (Exception e){
-                e.printStackTrace();
-            }
-            currentToken = tokens.get(i);
-        }
-    }
-
-    private void value(){
-        try{
-            VAR();
-        } catch (Exception e){
-            --i;
-            try{
-                DIGIT();
-            } catch (Exception e1){
-                e1.printStackTrace();
+                check("OP");
+                math_expr();
+            } catch (Exception var3) {
+                var3.printStackTrace();
             }
         }
-    }
 
-    private void math_br(){
-        try{
-            L_B();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        math_expr();
         try {
-            R_B();
-        } catch (Exception e){
-            e.printStackTrace();
+            if (currentToken.getType().equals("END") && (tokens.get(i + 1)).getType().equals("R_F_B")) {
+                ++i;
+            }
+        } catch (IndexOutOfBoundsException var2) {
+
         }
-    }
-    private void OP() throws Exception{
-        match();
-        proverka("OP");
+
     }
 
-    private void L_B() throws Exception{
-        match();
-        proverka("L_B");
+    private void math_expr() {
+        try {
+            add_expr();
+        } catch (Exception var2) {
+            math_br();
+        }
+
     }
 
-    private void R_B() throws Exception{
-        match();
-        proverka("R_B");
+    private void add_expr() throws Exception {
+        try {
+            value();
+        } catch (Exception var3) {
+            throw new Exception("ne add_expr!!!");
+        }
+
+        for(currentToken = tokens.get(i); !currentToken.getType().equals("END") && !currentToken.getType().equals("R_B"); currentToken = tokens.get(i)) {
+            try {
+                check("OP");
+                value();
+            } catch (Exception var2) {
+                throw new Exception(".............");
+            }
+        }
+
     }
 
-    private void VAR() throws Exception {
-        match();
-        proverka("VAR");
+    private void value() throws Exception {
+        try {
+            check("VAR");
+        } catch (Exception var4) {
+            --i;
+
+            try {
+                check("DIGIT");
+            } catch (Exception var3) {
+                --i;
+                throw new Exception("ne value!!!");
+            }
+        }
+
     }
 
-    private void ASSIGN_OP() throws Exception {
-        match();
-        proverka("ASSIGN_OP");
+    private void math_br() {
+        try {
+            check("L_B");
+            assign_value();
+            check("R_B");
+        } catch (Exception var2) {
+            var2.printStackTrace();
+        }
+
     }
 
-    private void DIGIT() throws Exception {
-        match();
-        proverka("DIGIT");
+    private void cycle() {
+        try {
+            check("CYCLE");
+        } catch (Exception var2) {
+            var2.printStackTrace();
+        }
+
+        comp();
+        body();
+    }
+
+    private void comp() {
+        try {
+            check("L_B");
+            check("VAR");
+            check("COMP_OP");
+            value();
+            check("R_B");
+        } catch (Exception var2) {
+            var2.printStackTrace();
+        }
+
+    }
+
+    private void body() {
+        try {
+            check("L_F_B");
+            lang();
+            check("R_F_B");
+        } catch (Exception var2) {
+            var2.printStackTrace();
+        }
+
     }
 
     public static void main(String[] args) {
@@ -140,12 +176,12 @@ public class Parser {
         Scanner scanner = new Scanner(System.in);
         String line = scanner.nextLine();
         Parser parser = new Parser();
-        try{
-            parser.parse(lexer.parse(line));
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-        tokens.forEach(token -> System.out.println(token.getType() + " " + token.getValue()));
-    }
 
+        try {
+            parser.parse(lexer.parse(line));
+        } catch (Exception var6) {
+            var6.printStackTrace();
+        }
+        tokens.forEach(token -> {System.out.println(token.getType() + " " + token.getValue());});
+    }
 }
