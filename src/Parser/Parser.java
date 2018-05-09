@@ -14,53 +14,125 @@ public class Parser {
         i++;
     }
 
-    private void parse() {
+    private void proverka(String s) throws Exception{
+        if(!currentToken.getType().equals(s)) {
+            throw new Exception(s + " expected, but "+ currentToken.getType()+" found!!!");
+        }else {
+            System.out.println("vse OK!");
+        }
+    }
+
+    public void parse(ArrayList<Token> token) {
+        tokens = token;
         lang();
     }
 
     private void lang() {
-        while (i<tokens.size()){
-            expr();
-        }
-
-    }
-
-    private void expr() {
         try {
-            VAR();
-            ASSIGN_OP();
-            DIGIT();
-        }
-        catch(Exception e) {
+            while (i < tokens.size()) {
+                expr();
+            }
+        } catch (Exception e){
             e.printStackTrace();
         }
     }
 
+    private void expr() throws Exception {
+        assign();
+        //cycle();
+        //print();
+    }
+
+    private void assign() throws Exception{
+        try{
+            VAR();
+            ASSIGN_OP();
+            assign_value();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            throw new Exception("Ne assign!!!");
+        }
+    }
+
+    private void assign_value(){
+        math_expr();
+        //OP();
+        //math_expr();
+    }
+
+    private void math_expr(){
+        add_expr();
+        //math_br();
+    }
+    private void add_expr(){
+        value();
+        currentToken = tokens.get(i);
+        while(!currentToken.getType().equals("END")) {
+            try {
+                OP();
+                value();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+            currentToken = tokens.get(i);
+        }
+    }
+
+    private void value(){
+        try{
+            VAR();
+        } catch (Exception e){
+            --i;
+            try{
+                DIGIT();
+            } catch (Exception e1){
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    private void math_br(){
+        try{
+            L_B();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        math_expr();
+        try {
+            R_B();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    private void OP() throws Exception{
+        match();
+        proverka("OP");
+    }
+
+    private void L_B() throws Exception{
+        match();
+        proverka("L_B");
+    }
+
+    private void R_B() throws Exception{
+        match();
+        proverka("R_B");
+    }
+
     private void VAR() throws Exception {
         match();
-        if(!currentToken.getType().equals("VAR")) {
-            throw new Exception("VAR expected, but "+ currentToken.getType()+" found!!!");
-        }else {
-            System.out.println("vse OK!");
-        }
+        proverka("VAR");
     }
 
     private void ASSIGN_OP() throws Exception {
         match();
-        if(!currentToken.getType().equals("ASSIGN_OP")) {
-            throw new Exception("ASSIGN_OP expected, but "+ currentToken.getType()+" found!!!");
-        }else {
-            System.out.println("vse OK!");
-        }
+        proverka("ASSIGN_OP");
     }
 
     private void DIGIT() throws Exception {
         match();
-        if(!currentToken.getType().equals("DIGIT")) {
-            throw new Exception("DIGIT expected, but "+ currentToken.getType()+" found!!!");
-        }else {
-            System.out.println("vse OK!");
-        }
+        proverka("DIGIT");
     }
 
     public static void main(String[] args) {
@@ -68,10 +140,12 @@ public class Parser {
         Scanner scanner = new Scanner(System.in);
         String line = scanner.nextLine();
         Parser parser = new Parser();
-        tokens = lexer.parse(line);
-        for(Token token: tokens) {
-            System.out.println(token.getType()+" "+token.getValue());
+        try{
+            parser.parse(lexer.parse(line));
+        } catch (Exception e){
+            e.printStackTrace();
         }
-        parser.parse();
+        tokens.forEach(token -> System.out.println(token.getType() + " " + token.getValue()));
     }
+
 }
