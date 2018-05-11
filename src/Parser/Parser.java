@@ -18,7 +18,7 @@ public class Parser {
 
     private void check(String s) throws Exception {
         match();
-        if (!currentToken.getType().type.equals(s)) {
+        if (!currentToken.getType().equals(s)) {
             throw new Exception(s + " expected, but " + currentToken.getType() + " found!!!");
         } else {
             System.out.println("vse OK! - "+i);
@@ -58,7 +58,7 @@ public class Parser {
 
     private void assign_value() {
         math_expr();
-        for(currentToken = tokens.get(i); !currentToken.getType().type.equals("END") && !currentToken.getType().type.equals("R_B"); currentToken = tokens.get(i)) {
+        for(currentToken = tokens.get(i); !currentToken.getType().equals("END") && !currentToken.getType().equals("R_B"); currentToken = tokens.get(i)) {
             try {
                 check("OP");
                 math_expr();
@@ -66,7 +66,7 @@ public class Parser {
                 var3.printStackTrace();
             }
         }
-        if (currentToken.getType().type.equals("END") && (tokens.get(0)).getType().type.equals("CYCLE")) {
+        if (currentToken.getType().equals("END") && (tokens.get(0)).getType().equals("CYCLE")) {
             ++i;
         }
     }
@@ -87,7 +87,7 @@ public class Parser {
             throw new Exception("ne add_expr!!!");
         }
 
-        for(currentToken = tokens.get(i); !currentToken.getType().type.equals("END") && !currentToken.getType().type.equals("R_B"); currentToken = tokens.get(i)) {
+        for(currentToken = tokens.get(i); !currentToken.getType().equals("END") && !currentToken.getType().equals("R_B"); currentToken = tokens.get(i)) {
             try {
                 check("OP");
                 value();
@@ -151,7 +151,7 @@ public class Parser {
     private void body() {
         try {
             check("L_F_B");
-            while(!(tokens.get(i).getType().type.equals("R_F_B"))) {
+            while(!(tokens.get(i).getType().equals("R_F_B"))) {
                 expr();
             }
             check("R_F_B");

@@ -18,7 +18,7 @@ public class Lexer {
                 n++;
                 if(matcher.lookingAt()){
                     currentString.append(matcher.group());
-                    tokenList.add(new Token(lexemType,currentString.toString()));
+                    tokenList.add(new Token(lexemType.type,currentString.toString()));
                     acc.append(string);
                     acc.delete(0,(currentString.length()));
                     string = acc.toString();

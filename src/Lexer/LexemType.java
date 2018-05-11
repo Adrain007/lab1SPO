@@ -15,7 +15,8 @@ public enum LexemType {
     R_B("R_B",Pattern.compile("^[)]")),
     L_F_B("L_F_B",Pattern.compile("^[{]")),
     R_F_B("R_F_B",Pattern.compile("^[}]")),
-    END("END",Pattern.compile("^[;]"));
+    END("END",Pattern.compile("^[;]")),
+    EOF("EOF",Pattern.compile("^"));
 
     public String type;
     public Pattern pattern;
@@ -23,5 +24,8 @@ public enum LexemType {
     LexemType(String type, Pattern pattern){
         this.type = type;
         this.pattern = pattern;
+    }
+    public String getType(){
+        return type;
     }
 }

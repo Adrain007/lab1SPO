@@ -1,10 +1,10 @@
 package Lexer;
 public class Token {
 
-    private LexemType type;
+    private String type;
     private String value;
 
-    Token(LexemType type, String value){
+    public Token(String type, String value){
         this.type = type;
         this.value = value;
     }
@@ -13,7 +13,11 @@ public class Token {
         return value;
     }
 
-    public LexemType getType(){
+    public String getType(){
         return type;
+    }
+    @Override
+    public String toString(){
+        return String.format("%s",type);
     }
 }
