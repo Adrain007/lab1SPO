@@ -1,10 +1,7 @@
 package Parser;
 
-import Lexer.Lexer;
 import Lexer.Token;
 import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.function.Consumer;
 
 public class Parser {
     private static ArrayList<Token> tokens;
@@ -21,10 +18,10 @@ public class Parser {
 
     private void check(String s) throws Exception {
         match();
-        if (!currentToken.getType().equals(s)) {
+        if (!currentToken.getType().type.equals(s)) {
             throw new Exception(s + " expected, but " + currentToken.getType() + " found!!!");
         } else {
-            System.out.println("vse OK!");
+            System.out.println("vse OK! - "+i);
         }
     }
 
@@ -37,7 +34,6 @@ public class Parser {
         while(i < tokens.size() - 1) {
             expr();
         }
-
     }
 
     private void expr() {
@@ -61,9 +57,8 @@ public class Parser {
     }
 
     private void assign_value() {
-        this.math_expr();
-
-        for(currentToken = tokens.get(i); !currentToken.getType().equals("END") && !currentToken.getType().equals("R_B"); currentToken = tokens.get(i)) {
+        math_expr();
+        for(currentToken = tokens.get(i); !currentToken.getType().type.equals("END") && !currentToken.getType().type.equals("R_B"); currentToken = tokens.get(i)) {
             try {
                 check("OP");
                 math_expr();
@@ -71,15 +66,9 @@ public class Parser {
                 var3.printStackTrace();
             }
         }
-
-        try {
-            if (currentToken.getType().equals("END") && (tokens.get(i + 1)).getType().equals("R_F_B")) {
-                ++i;
-            }
-        } catch (IndexOutOfBoundsException var2) {
-
+        if (currentToken.getType().type.equals("END") && (tokens.get(0)).getType().type.equals("CYCLE")) {
+            ++i;
         }
-
     }
 
     private void math_expr() {
@@ -98,7 +87,7 @@ public class Parser {
             throw new Exception("ne add_expr!!!");
         }
 
-        for(currentToken = tokens.get(i); !currentToken.getType().equals("END") && !currentToken.getType().equals("R_B"); currentToken = tokens.get(i)) {
+        for(currentToken = tokens.get(i); !currentToken.getType().type.equals("END") && !currentToken.getType().type.equals("R_B"); currentToken = tokens.get(i)) {
             try {
                 check("OP");
                 value();
@@ -142,7 +131,6 @@ public class Parser {
         } catch (Exception var2) {
             var2.printStackTrace();
         }
-
         comp();
         body();
     }
@@ -163,25 +151,13 @@ public class Parser {
     private void body() {
         try {
             check("L_F_B");
-            lang();
+            while(!(tokens.get(i).getType().type.equals("R_F_B"))) {
+                expr();
+            }
             check("R_F_B");
         } catch (Exception var2) {
             var2.printStackTrace();
         }
-
     }
 
-    public static void main(String[] args) {
-        Lexer lexer = new Lexer();
-        Scanner scanner = new Scanner(System.in);
-        String line = scanner.nextLine();
-        Parser parser = new Parser();
-
-        try {
-            parser.parse(lexer.parse(line));
-        } catch (Exception var6) {
-            var6.printStackTrace();
-        }
-        tokens.forEach(token -> {System.out.println(token.getType() + " " + token.getValue());});
-    }
 }

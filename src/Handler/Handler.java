@@ -1,6 +1,6 @@
 package Handler;
 
 public interface Handler {
-    public void handle(TokenOperand to);
-    public void handle(TokenOperator to);
+    void handle(TokenOperand to);
+    void handle(TokenOperator to);
 }

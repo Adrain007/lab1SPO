@@ -18,7 +18,7 @@ public class Lexer {
                 n++;
                 if(matcher.lookingAt()){
                     currentString.append(matcher.group());
-                    tokenList.add(new Token(lexemType.type,currentString.toString()));
+                    tokenList.add(new Token(lexemType,currentString.toString()));
                     acc.append(string);
                     acc.delete(0,(currentString.length()));
                     string = acc.toString();
@@ -28,7 +28,7 @@ public class Lexer {
                     break;
                 }
                 else if(n == LexemType.values().length){
-                    throw new Exception("Ne to napisal, debik!!!");
+                    throw new Exception("НЕ ТО НАПИСАЛ, ДЕБИК!!!");
                 }
             }
         }
