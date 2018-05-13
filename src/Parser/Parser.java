@@ -20,8 +20,6 @@ public class Parser {
         match();
         if (!currentToken.getType().equals(s)) {
             throw new Exception(s + " expected, but " + currentToken.getType() + " found!!!");
-        } else {
-            System.out.println("vse OK! - "+i);
         }
     }
 
@@ -159,5 +157,4 @@ public class Parser {
             var2.printStackTrace();
         }
     }
-
 }

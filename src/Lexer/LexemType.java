@@ -8,15 +8,16 @@ public enum LexemType {
     DIGIT("DIGIT", Pattern.compile("^(0|[1-9][0-9]*)")),
     VAR("VAR", Pattern.compile("^([a-zA-Z]+[0-9]*[a-zA-Z]*)")),
     COMP_OP("COMP_OP",Pattern.compile("^(==|<|>)")),
-    ASSIGN_OP("ASSIGN_OP", Pattern.compile("^(=)")),
-    OP("OP", Pattern.compile("^\\+|-|\\*|/")),
+    ASSIGN_OP("ASSIGN_OP", Pattern.compile("^(:=)")),
+    OP_ADD_SUB("OP_ADD_SUB", Pattern.compile("^\\+|-")),
+    OP_DIV_MUL("OP_DIV_MUL", Pattern.compile("^\\*|/")),
     SPACE("SPACE",Pattern.compile("^\\s")),
     L_B("L_B",Pattern.compile("^[(]")),
     R_B("R_B",Pattern.compile("^[)]")),
     L_F_B("L_F_B",Pattern.compile("^[{]")),
     R_F_B("R_F_B",Pattern.compile("^[}]")),
     END("END",Pattern.compile("^[;]")),
-    EOF("EOF",Pattern.compile("^"));
+    COMA("COMA",Pattern.compile("^[,]"));
 
     public String type;
     public Pattern pattern;
@@ -24,8 +25,5 @@ public enum LexemType {
     LexemType(String type, Pattern pattern){
         this.type = type;
         this.pattern = pattern;
-    }
-    public String getType(){
-        return type;
     }
 }

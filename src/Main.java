@@ -1,24 +1,27 @@
 import Lexer.Lexer;
 import Parser.Parser1;
 import Lexer.Token;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Scanner;
 
-public class Main {
+public class Main{
 
-    private static ArrayList<Token> tokens;
-
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        ArrayList<Token> tokens;
+        final String input = new String(Files.readAllBytes(Paths.get("C:/Users/Адриан/IdeaProjects/lab1(SPO)/src", "proga.txt")),"UTF-8");
         Lexer lexer = new Lexer();
-        Scanner scanner = new Scanner(System.in);
-        String line = scanner.nextLine();
-        try {
-            tokens = lexer.parse(line);
-        } catch (Exception var6) {
-            var6.printStackTrace();
-        }
+        long start = System.nanoTime();
+        tokens = lexer.getTokenList(input);
         Parser1 parser = new Parser1(tokens);
         parser.parse();
-        tokens.forEach(token -> System.out.println((tokens.indexOf(token)+1)+" - "+token.getType() + " " + token.getValue()));
+        long finish = System.nanoTime();
+        for(Token token: tokens){
+            if(!token.getType().equals("SPACE")) {
+                System.out.println((tokens.indexOf(token)) + " - " + token.getType() + " " + token.getValue());
+            }
+        }
+        System.out.println("\n"+"Execution time = "+((finish-start)/Math.pow(10,6))+" ms");
     }
 }

@@ -9,15 +9,14 @@ public class Token {
         this.value = value;
     }
 
+    public Token() {
+    }
+
     public String getValue(){
         return value;
     }
 
     public String getType(){
         return type;
-    }
-    @Override
-    public String toString(){
-        return String.format("%s",type);
     }
 }

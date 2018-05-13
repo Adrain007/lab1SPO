@@ -27,11 +27,16 @@ public class Parser1 {
 
     private boolean match(String type){
         final Token current = get(0);
-        if(!(type.equals(current.getType()))) {
+        if((type.equals(current.getType()))) {
+            pos++;
+            return true;
+        }
+        else if(current.getType().equals("SPACE")){
+            pos++;
+            return match(type);
+        }else {
             return false;
         }
-        pos++;
-        return true;
     }
 
     public void parse(){
@@ -45,32 +50,29 @@ public class Parser1 {
     }
 
     private void expr() {
-        try {
+        if(!(!(match("VAR"))||!(match("ASSIGN_OP")))) {
             assign();
-            if(!match("END")){
-                throw new Exception("SOSIPISOS-5!!!");
-            }
-        }catch (RuntimeException e){
+        }else if(match("CYCLE")) {
             cycle();
-        } catch (Exception e) {
-            e.printStackTrace();
+        }else if(match("PRINT")) {
+            print();
+        }else {
+            throw new RuntimeException("LOX 1");
         }
-        //print();
     }
 
-    private void assign() throws RuntimeException {
-        match("VAR");
-        if(match("ASSIGN_OP")) {
-            assign_value();
-        } else {
-            throw new RuntimeException("SOSIPISOS-4!!!");
+    private void assign() {
+        assign_value();
+        if(!match("END")){
+            throw new RuntimeException("LOX 2");
         }
+
     }
 
     private void assign_value() {
         math_expr();
         while (true) {
-            if(match("OP")) {
+            if((match("OP_DIV_MUL"))||(match("OP_ADD_SUB"))) {
                 math_expr();
             }
             else {
@@ -91,58 +93,74 @@ public class Parser1 {
     private void add_expr() throws RuntimeException {
         value();
         while(true) {
-            if(match("OP")){
+            if((match("OP_DIV_MUL"))||(match("OP_ADD_SUB"))){
                 value();
             }else {
                 break;
             }
         }
     }
+
     private void math_br() {
-        while(true) {
+        while(!(match("R_B"))) {
             if(match("L_B")) {
                 assign_value();
-            }
-            if(match("R_B")){
-                break;
-            }else {
+            } else {
                 throw new RuntimeException("SOSIPISOS-1!!!");
             }
         }
     }
-    private boolean value() throws RuntimeException{
-        if(match("DIGIT")) {
-            return true;
-        }else if (match("VAR")){
-            return true;
-        } else {
+    private void value() throws RuntimeException{
+        if(!(match("DIGIT")||(match("VAR")))) {
             throw new RuntimeException("SOSIPISOS-2!!!");
         }
     }
 
     private void cycle(){
-        if(match("CYCLE")) {
-            compare();
-            body();
-        } else {
-            throw new RuntimeException("SOSIPISOS-3!!!");
-        }
+        compare();
+        body();
     }
 
     private void compare() {
-        match("L_B");
-        match("VAR");
-        match("COMP_OP");
-        value();
-        match("R_B");
+        if((match("L_B"))&&(match("VAR"))&&(match("COMP_OP"))) {
+            value();
+        }else {
+            throw new RuntimeException("SOSIPISOS-6!!!");
+        }
+        if(!match("R_B")){
+            throw new RuntimeException("SOSIPISOS-7!!!");
+        }
     }
 
     private void body(){
         if(match("L_F_B")) {
-            while (!get(0).getType().equals("R_F_B")) {
+            while (!match("R_F_B")) {
                 expr();
             }
+        } else {
+            throw new RuntimeException("LOX-5!!!");
         }
-        match("R_F_B");
     }
+    private void print(){
+        if(match("L_B")){
+            value();
+            while(!((match("R_B"))&&(match("END")))) {
+                if(match("COMA")){
+                    value();
+                }else {
+                    throw new RuntimeException("LOX-3!!!");
+                }
+            }
+        } else {
+            throw new RuntimeException("LOX-4!!!");
+        }
+    }
+    /*private boolean checkEnd(String s){
+        List<Token> subList  = tokens.subList(tokens.indexOf(get(0)),tokens.size()-1);
+        List<String> strings = new ArrayList<>();
+        for (Token token: subList){
+            strings.add(token.getType());
+        }
+        return !(strings.lastIndexOf(s) == -1);
+    }*/
 }

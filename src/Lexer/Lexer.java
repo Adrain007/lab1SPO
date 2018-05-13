@@ -5,12 +5,13 @@ import java.util.regex.Pattern;
 
 public class Lexer {
 
-    static private StringBuffer currentString = new StringBuffer();
-    static private StringBuffer acc = new StringBuffer();
+    static private StringBuilder currentString = new StringBuilder();
+    static private StringBuilder acc = new StringBuilder();
     static private int n = 0;
+    static private ArrayList<Token> tokenList = new ArrayList<Token>();
 
-    public ArrayList<Token> parse(String string) throws Exception{
-        ArrayList<Token> tokenList = new ArrayList<>();
+
+    public void parse(String string){
         while(string.length()!=0) {
             for(LexemType lexemType: LexemType.values()) {
                 Pattern pattern = lexemType.pattern;
@@ -18,7 +19,7 @@ public class Lexer {
                 n++;
                 if(matcher.lookingAt()){
                     currentString.append(matcher.group());
-                    tokenList.add(new Token(lexemType.type,currentString.toString()));
+                    addToken(lexemType,currentString.toString());
                     acc.append(string);
                     acc.delete(0,(currentString.length()));
                     string = acc.toString();
@@ -28,10 +29,18 @@ public class Lexer {
                     break;
                 }
                 else if(n == LexemType.values().length){
-                    throw new Exception("НЕ ТО НАПИСАЛ, ДЕБИК!!!");
+                    throw new RuntimeException("НЕ ТО НАПИСАЛ, ДЕБИК!!!");
                 }
             }
         }
+    }
+
+    private void addToken(LexemType lexemType,String s){
+        tokenList.add(new Token(lexemType.type,s));
+    }
+
+    public ArrayList<Token> getTokenList(String s){
+        parse(s);
         return tokenList;
     }
 
