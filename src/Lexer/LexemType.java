@@ -3,27 +3,40 @@ package Lexer;
 import java.util.regex.Pattern;
 
 public enum LexemType {
-    CYCLE("CYCLE",Pattern.compile("^while|if")),
-    PRINT("PRINT",Pattern.compile("^print")),
-    DIGIT("DIGIT", Pattern.compile("^(0|[1-9][0-9]*)")),
-    VAR("VAR", Pattern.compile("^([a-zA-Z]+[0-9]*[a-zA-Z]*)")),
-    COMP_OP("COMP_OP",Pattern.compile("^(==|<|>)")),
-    ASSIGN_OP("ASSIGN_OP", Pattern.compile("^(:=)")),
-    OP_ADD_SUB("OP_ADD_SUB", Pattern.compile("^\\+|-")),
-    OP_DIV_MUL("OP_DIV_MUL", Pattern.compile("^\\*|/")),
-    SPACE("SPACE",Pattern.compile("^\\s")),
-    L_B("L_B",Pattern.compile("^[(]")),
-    R_B("R_B",Pattern.compile("^[)]")),
-    L_F_B("L_F_B",Pattern.compile("^[{]")),
-    R_F_B("R_F_B",Pattern.compile("^[}]")),
-    END("END",Pattern.compile("^[;]")),
-    COMA("COMA",Pattern.compile("^[,]"));
+    CYCLE("CYCLE",Pattern.compile("^while|if"),0),
+    PRINT("PRINT",Pattern.compile("^print"),0),
+    DIGIT("DIGIT", Pattern.compile("^(0|[1-9][0-9]*)"),0),
+    VAR("VAR", Pattern.compile("^([a-zA-Z]+[0-9]*[a-zA-Z]*)"),0),
+    COMP_OP("COMP_OP",Pattern.compile("^(==|<|>)"),0),
+    ASSIGN_OP("ASSIGN_OP", Pattern.compile("^(:=)"),2),
+    OP_ADD_SUB("OP_ADD_SUB", Pattern.compile("^\\+|-"),3),
+    OP_DIV_MUL("OP_DIV_MUL", Pattern.compile("^\\*|/"),4),
+    SPACE("SPACE",Pattern.compile("^\\s"),0),
+    L_B("L_B",Pattern.compile("^[(]"),0),
+    R_B("R_B",Pattern.compile("^[)]"),0),
+    L_F_B("L_F_B",Pattern.compile("^[{]"),0),
+    R_F_B("R_F_B",Pattern.compile("^[}]"),0),
+    END("END",Pattern.compile("^[;]"),0),
+    COMA("COMA",Pattern.compile("^[,]"),0);
 
-    public String type;
-    public Pattern pattern;
+    private String type;
+    private Pattern pattern;
+    private int priority;
 
-    LexemType(String type, Pattern pattern){
+    LexemType(String type, Pattern pattern,int priority){
         this.type = type;
         this.pattern = pattern;
+        this.priority = priority;
+    }
+
+    public String getType(){
+        return type;
+    }
+    public Pattern getPattern(){
+        return pattern;
+    }
+
+    public int getPriority() {
+        return priority;
     }
 }

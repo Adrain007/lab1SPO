@@ -50,13 +50,13 @@ public class Parser1 {
     }
 
     private void expr() {
-        if(!(!(match("VAR"))||!(match("ASSIGN_OP")))) {
+        if(match("VAR")&&match("ASSIGN_OP")) {
             assign();
         }else if(match("CYCLE")) {
             cycle();
         }else if(match("PRINT")) {
             print();
-        }else {
+        } else {
             throw new RuntimeException("LOX 1");
         }
     }

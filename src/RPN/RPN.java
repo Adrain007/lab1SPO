@@ -8,34 +8,55 @@ import Lexer.Token;
 import java.util.*;
 
 public class RPN {
-    private static Stack<Token> stack = new Stack<>();
-    private static List<Token> exit = new ArrayList<>();
+    private static Stack<TokenOperator> stack = new Stack<>();
+    private static ArrayList<Token> output = new ArrayList<>();
     private static Lexer lexer = new Lexer();
-    private static String string = "as:=as-sd;";
-    private static ArrayList<Token> input;
+    private static ArrayList<Token> input = new ArrayList<>();
+
 
     public RPN(){
 
     }
 
-    private void toRPN(){
+    public ArrayList<Token> toRPN(ArrayList<Token> tokens1){
+        input = tokens1;
         for(Token token: input){
-            if(token.getType().equals("VAR")||token.getType().equals("DIGIT")){
-                exit.add(token);
-            }else if(token.getType().equals("OP")){
 
+            if(token instanceof TokenOperand){
+                output.add(token);
+            } else if(token instanceof TokenOperator){
+                TokenOperator tokenOperator = (TokenOperator) token;
+                if(tokenOperator.getType().equals("L_B")){
+                    stack.push(tokenOperator);
+                }
+                else if(tokenOperator.getType().equals("R_B")){
+                    while (!stack.peek().getType().equals("L_B")){
+                        output.add(stack.pop());
+                    }
+                    stack.pop();
+                }
+                else if(!stack.empty() && tokenOperator.getPriority() <= stack.peek().getPriority()){
+                    while (tokenOperator.getPriority() <= stack.peek().getPriority()) {
+                        output.add(stack.pop());
+                    }
+                    stack.push(tokenOperator);
+                } else {
+                    stack.push(tokenOperator);
+                }
+            } else if(input.size()-1==input.indexOf(token)){
+                while (!stack.empty()){
+                    output.add(stack.pop());
+                }
             }
         }
+        return output;
     }
+    //a b c d * 1 2 + e - / + asd - as as 78 / - 97 - 23 * 234 / + =
 
-    private void dsfsd(ArrayList<Token> token){
-        List<TokenOperand> tokenOperands = new LinkedList<>();
-        List<TokenOperator> tokenOperators = new LinkedList<>();
-        String reg = null;
-        for (Token token1: token){
-            if(token1.getType().equals("VAR")||token1.getType().equals("DIGIT")){
-                tokenOperands.add(new TokenOperand(token1.getType(),token1.getValue()));
-            }
+    private void stackPush(TokenOperator tokenOperator){
+        if(tokenOperator.getType().equals("L_B")){
+            tokenOperator.setPriority(0);
         }
+        stack.push(tokenOperator);
     }
 }

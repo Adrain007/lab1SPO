@@ -9,9 +9,6 @@ public class Token {
         this.value = value;
     }
 
-    public Token() {
-    }
-
     public String getValue(){
         return value;
     }

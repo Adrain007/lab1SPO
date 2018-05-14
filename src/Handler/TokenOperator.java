@@ -4,14 +4,20 @@ import Lexer.Token;
 
 public class TokenOperator extends Token implements TranslationElement {
     private int priority;
-    private String value;
 
     public void translate(Handler h){
         h.handle(this);
     }
 
-    public TokenOperator(int priority, String value){
+    public TokenOperator(int priority,String type, String value){
+        super(type,value);
         this.priority = priority;
-        this.value = value;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+    public void setPriority(int priority){
+        this.priority = priority;
     }
 }
