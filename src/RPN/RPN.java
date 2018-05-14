@@ -2,25 +2,16 @@ package RPN;
 
 import Handler.TokenOperand;
 import Handler.TokenOperator;
-import Lexer.Lexer;
 import Lexer.Token;
 
 import java.util.*;
 
 public class RPN {
     private static Stack<TokenOperator> stack = new Stack<>();
-    private static ArrayList<Token> output = new ArrayList<>();
-    private static Lexer lexer = new Lexer();
-    private static ArrayList<Token> input = new ArrayList<>();
-
-
-    public RPN(){
-
-    }
 
     public ArrayList<Token> toRPN(ArrayList<Token> tokens1){
-        input = tokens1;
-        for(Token token: input){
+        ArrayList<Token> output = new ArrayList<>();
+        for(Token token: tokens1){
 
             if(token instanceof TokenOperand){
                 output.add(token);
@@ -43,7 +34,7 @@ public class RPN {
                 } else {
                     stack.push(tokenOperator);
                 }
-            } else if(input.size()-1==input.indexOf(token)){
+            } else if(tokens1.size()-1==tokens1.indexOf(token)){
                 while (!stack.empty()){
                     output.add(stack.pop());
                 }
@@ -53,10 +44,4 @@ public class RPN {
     }
     //a b c d * 1 2 + e - / + asd - as as 78 / - 97 - 23 * 234 / + =
 
-    private void stackPush(TokenOperator tokenOperator){
-        if(tokenOperator.getType().equals("L_B")){
-            tokenOperator.setPriority(0);
-        }
-        stack.push(tokenOperator);
-    }
 }
