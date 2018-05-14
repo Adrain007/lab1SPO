@@ -42,6 +42,5 @@ public class RPN {
         }
         return output;
     }
-    //a b c d * 1 2 + e - / + asd - as as 78 / - 97 - 23 * 234 / + =
-
+    //a b c d * 1 2 + e - / + asd - as as 78 / - 97 - 23 * 234 / + :=
 }

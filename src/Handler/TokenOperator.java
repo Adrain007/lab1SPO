@@ -17,7 +17,4 @@ public class TokenOperator extends Token implements TranslationElement {
     public int getPriority() {
         return priority;
     }
-    public void setPriority(int priority){
-        this.priority = priority;
-    }
 }

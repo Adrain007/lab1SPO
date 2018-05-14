@@ -155,12 +155,4 @@ public class Parser1 {
             throw new RuntimeException("LOX-4!!!");
         }
     }
-    /*private boolean checkEnd(String s){
-        List<Token> subList  = tokens.subList(tokens.indexOf(get(0)),tokens.size()-1);
-        List<String> strings = new ArrayList<>();
-        for (Token token: subList){
-            strings.add(token.getType());
-        }
-        return !(strings.lastIndexOf(s) == -1);
-    }*/
 }
