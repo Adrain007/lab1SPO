@@ -7,11 +7,8 @@ import java.util.ArrayList;
 public class Parser1 {
 
     private static final Token EOF = new Token("EOF","");
-
     private final ArrayList<Token> tokens;
-
     private int pos;
-
     private final int size ;
 
     public Parser1(ArrayList<Token> token) {
@@ -50,11 +47,18 @@ public class Parser1 {
     }
 
     private void expr() {
-        if(match("VAR")&&match("ASSIGN_OP")) {
-            assign();
-        }else if(match("CYCLE")) {
+        if(match("VAR")) {
+            if(match("TYPE")) {
+                type();
+            }
+            else if(match("ASSIGN_OP")){
+                assign();
+            } else{
+                throw new RuntimeException("RINAT sosi");
+            }
+        }  else if(match("CYCLE")) {
             cycle();
-        }else if(match("PRINT")) {
+        } else if(match("PRINT")) {
             print();
         } else {
             throw new RuntimeException("LOX 1");
@@ -66,7 +70,6 @@ public class Parser1 {
         if(!match("END")){
             throw new RuntimeException("LOX 2");
         }
-
     }
 
     private void assign_value() {
@@ -79,7 +82,6 @@ public class Parser1 {
                 break;
             }
         }
-
     }
 
     private void math_expr() {
@@ -153,6 +155,16 @@ public class Parser1 {
             }
         } else {
             throw new RuntimeException("LOX-4!!!");
+        }
+    }
+
+    private void type(){
+        if(match("STRING")){
+            if(!match("END")){
+                throw new RuntimeException("LOX-9!!!");
+            }
+        } else {
+            throw new RuntimeException("LOX-8!!!");
         }
     }
 }

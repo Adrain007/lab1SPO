@@ -1,1 +1,5 @@
-a:= b+c*d / (1+2-e)-asd+( ((as-as/78) -97)* 23)/234;
+g type String;
+f type String;
+g := 90 - 78;
+g := 2 * g;
+f := g + 23-(f+5)/5+(8*(25 - g));
