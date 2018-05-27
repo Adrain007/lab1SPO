@@ -1,199 +1,124 @@
 package StackMachine;
+
 import Lexer.TokenOperand;
 import Lexer.TokenOperator;
 import Lexer.Token;
+
 import java.util.*;
 
 public class StackMachine {
-
     private ArrayList<Token> tokens;
     private Stack<Token> stackMachine = new Stack<>();
-    private HashMap<String, Variable> variablesTable  = new HashMap<>();
+    private HashMap<String, Variable> variablesTable = new HashMap<>();
     private static int i;
+    private static Variable assignTo;
 
-    public StackMachine(ArrayList<Token> tokens1){
+    public StackMachine(ArrayList<Token> tokens1) {
         this.tokens = tokens1;
     }
 
-    public void calculation(){
-        for(i = 0; i<tokens.size()-1;i++){
-            if(tokens.get(i).getValue().equals("end point")){
+    public void calculation() {
+        for (i = 0; i < tokens.size() - 1; i++) {
+            if (tokens.get(i).getValue().equals("end point")) {
                 break;
-            }
-            else if(tokens.get(i) instanceof TokenOperand){
+            } else if (tokens.get(i) instanceof TokenOperand) {
                 stackMachine.push(tokens.get(i));
-            }
-            else if(tokens.get(i) instanceof TokenOperator){
+            } else if (tokens.get(i) instanceof TokenOperator) {
                 String value = tokens.get(i).getValue();
                 binaryOp(value);
             }
         }
     }
 
-    private void binaryOp(String value){
-        if(value.equals("!F")){
-            int buff = Integer.parseInt(stackMachine.pop().getValue());
-            if(stackMachine.pop().getValue().equals("0")) {
-                i = buff-1;
+    private float getOperand() {
+        if (stackMachine.peek().getType().equals("VAR")) {
+            try {
+                assignTo = variablesTable.get(stackMachine.pop().getValue());
+                return assignTo.getValue();
+            } catch (NullPointerException e){
+                throw new NullPointerException("Variable '"+tokens.get(i-2).getValue()+"' is not initialized!!!");
             }
-        }else if(value.equals("!")){
-            i = Integer.parseInt(stackMachine.pop().getValue())-1;
-        }else if(value.equals("print")){
-            printVar(stackMachine.pop().getValue());
-        } else if(stackMachine.peek().getType().equals("VAR")){
-            Variable a = variablesTable.get(stackMachine.pop().getValue());
-            if(stackMachine.peek().getType().equals("VAR")) {
-                Variable b = variablesTable.get(stackMachine.pop().getValue());
-                float c;
-                switch (value) {
-                    case "+":
-                        c = b.getValue() + a.getValue();
-                        stackMachine.push(new TokenOperand("DIGIT", Float.toString(c)));
-                        break;
-                    case "-":
-                        c = b.getValue() - a.getValue();
-                        stackMachine.push(new TokenOperand("DIGIT", Float.toString(c)));
-                        break;
-                    case "/":
-                        c = b.getValue() / a.getValue();
-                        stackMachine.push(new TokenOperand("DIGIT", Float.toString(c)));
-                        break;
-                    case "*":
-                        c = b.getValue() * a.getValue();
-                        stackMachine.push(new TokenOperand("DIGIT", Float.toString(c)));
-                        break;
-                    case ":=":
-                        b.setValue(a.getValue());
-                        break;
-                    case "==":
-                        if(b.getValue()==a.getValue()){
-                            stackMachine.push(new TokenOperand("DIGIT","1"));
-                        }else{
-                            stackMachine.push(new TokenOperand("DIGIT","0"));
-                        }
-                        break;
-                    case ">":
-                        if(b.getValue()>a.getValue()){
-                            stackMachine.push(new TokenOperand("DIGIT","1"));
-                        }else{
-                            stackMachine.push(new TokenOperand("DIGIT","0"));
-                        }
-                        break;
-                    case "<":
-                        if(b.getValue()<a.getValue()){
-                            stackMachine.push(new TokenOperand("DIGIT","1"));
-                        }else{
-                            stackMachine.push(new TokenOperand("DIGIT","0"));
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-            else if(stackMachine.peek().getType().equals("DIGIT")){
-                float c;
-                float b = Float.parseFloat(stackMachine.pop().getValue());
-                switch (value) {
-                    case "+":
-                        c = b + a.getValue();
-                        stackMachine.push(new TokenOperand("DIGIT", Float.toString(c)));
-                        break;
-                    case "-":
-                        c = b - a.getValue();
-                        stackMachine.push(new TokenOperand("DIGIT", Float.toString(c)));
-                        break;
-                    case "/":
-                        c = b / a.getValue();
-                        stackMachine.push(new TokenOperand("DIGIT", Float.toString(c)));
-                        break;
-                    case "*":
-                        c = b * a.getValue();
-                        stackMachine.push(new TokenOperand("DIGIT", Float.toString(c)));
-                        break;
-                    default:
-                        break;
-                }
-            }
-        } else if(stackMachine.peek().getType().equals("DIGIT")) {
-            float a = Float.parseFloat(stackMachine.pop().getValue());
-            if(stackMachine.peek().getType().equals("VAR")) {
-                Variable b = variablesTable.get(stackMachine.pop().getValue());
-                float c;
-                switch (value) {
-                    case "+":
-                        c = b.getValue()+a;
-                        stackMachine.push(new TokenOperand("DIGIT", Float.toString(c)));
-                        break;
-                    case "-":
-                        c = b.getValue()-a;
-                        stackMachine.push(new TokenOperand("DIGIT", Float.toString(c)));
-                        break;
-                    case "/":
-                        c = b.getValue()/a;
-                        stackMachine.push(new TokenOperand("DIGIT", Float.toString(c)));
-                        break;
-                    case "*":
-                        c = b.getValue()*a;
-                        stackMachine.push(new TokenOperand("DIGIT", Float.toString(c)));
-                        break;
-                    case ":=":
-                        b.setValue(a);
-                        break;
-                    case "==":
-                        if(b.getValue()==a){
-                            stackMachine.push(new TokenOperand("DIGIT","1"));
-                        }else{
-                            stackMachine.push(new TokenOperand("DIGIT","0"));
-                        }
-                        break;
-                    case ">":
-                        if(b.getValue()>a){
-                            stackMachine.push(new TokenOperand("DIGIT","1"));
-                        }else{
-                            stackMachine.push(new TokenOperand("DIGIT","0"));
-                        }
-                        break;
-                    case "<":
-                        if(b.getValue()<a){
-                            stackMachine.push(new TokenOperand("DIGIT","1"));
-                        }else{
-                            stackMachine.push(new TokenOperand("DIGIT","0"));
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-            else if(stackMachine.peek().getType().equals("DIGIT")){
-                float c;
-                float b = Float.parseFloat(stackMachine.pop().getValue());
-                switch (value) {
-                    case "+":
-                        c = b + a;
-                        stackMachine.push(new TokenOperand("DIGIT", Float.toString(c)));
-                        break;
-                    case "-":
-                        c = b - a;
-                        stackMachine.push(new TokenOperand("DIGIT", Float.toString(c)));
-                        break;
-                    case "/":
-                        c = b / a;
-                        stackMachine.push(new TokenOperand("DIGIT", Float.toString(c)));
-                        break;
-                    case "*":
-                        c = b * a;
-                        stackMachine.push(new TokenOperand("DIGIT", Float.toString(c)));
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }else if(value.equals("type")){
-            String buff = stackMachine.pop().getValue();
-            variablesTable.put(stackMachine.pop().getValue(),new Variable(0,buff));
+        } else {
+            return Float.parseFloat(stackMachine.pop().getValue());
         }
     }
-    private void printVar(String string){
-        System.out.println(variablesTable.get(string).getType()+ " " +string + " := " + variablesTable.get(string).getValue());
+
+    private void switchOp(float arg2, float arg1, String value) {
+        float result;
+        switch (value) {
+            case "+":
+                result = arg1 + arg2;
+                stackMachine.push(new TokenOperand("DIGIT", Float.toString(result)));
+                break;
+            case "-":
+                result = arg1 - arg2;
+                stackMachine.push(new TokenOperand("DIGIT", Float.toString(result)));
+                break;
+            case "/":
+                result = arg1 / arg2;
+                stackMachine.push(new TokenOperand("DIGIT", Float.toString(result)));
+                break;
+            case "*":
+                result = arg1 * arg2;
+                stackMachine.push(new TokenOperand("DIGIT", Float.toString(result)));
+                break;
+            case ":=":
+                assignTo.setValue(arg2);
+                break;
+            case "==":
+                if (arg1 == arg2) {
+                    stackMachine.push(new TokenOperand("DIGIT", "1"));
+                } else {
+                    stackMachine.push(new TokenOperand("DIGIT", "0"));
+                }
+                break;
+            case ">":
+                if (arg1 > arg2) {
+                    stackMachine.push(new TokenOperand("DIGIT", "1"));
+                } else {
+                    stackMachine.push(new TokenOperand("DIGIT", "0"));
+                }
+                break;
+            case "<":
+                if (arg1 < arg2) {
+                    stackMachine.push(new TokenOperand("DIGIT", "1"));
+                } else {
+                    stackMachine.push(new TokenOperand("DIGIT", "0"));
+                }
+                break;
+            default:
+                break;
+        }
+
+
+    }
+
+    private void binaryOp(String value) {
+        switch (value) {
+            case "!F": {
+                int buff = Integer.parseInt(stackMachine.pop().getValue());
+                if (stackMachine.pop().getValue().equals("0")) {
+                    i = buff - 1;
+                }
+                break;
+            }
+            case "!":
+                i = Integer.parseInt(stackMachine.pop().getValue()) - 1;
+                break;
+            case "print":
+                printVar(stackMachine.pop().getValue());
+                break;
+            case "type": {
+                String buff = stackMachine.pop().getValue();
+                variablesTable.put(stackMachine.pop().getValue(), new Variable(0, buff));
+                break;
+            }
+            default:
+                switchOp(getOperand(), getOperand(), value);
+                break;
+        }
+    }
+    private void printVar(String string) {
+        System.out.println(variablesTable.get(string).getType() + " " + string + " := " + variablesTable.get(string).getValue());
     }
 }
