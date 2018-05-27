@@ -1,26 +1,23 @@
 package RPN;
 
-import Handler.TokenOperand;
-import Handler.TokenOperator;
+import Lexer.TokenOperand;
+import Lexer.TokenOperator;
 import Lexer.LexemType;
 import Lexer.Token;
 import java.util.*;
 
 public class RPN {
     private static Stack<TokenOperator> stack = new Stack<>();
-    private int i;
+    private static int i;
     private ArrayList<Token> output = new ArrayList<>();
     private ArrayList<Token> input;
 
 
     public RPN(ArrayList<Token> tokens){
         this.input=tokens;
-
     }
 
     private void exprHandle(){
-
-
         if(input.get(i) instanceof TokenOperand){
             output.add(input.get(i));
         }
@@ -54,8 +51,7 @@ public class RPN {
         }
     }
     private void cycleRPN(){
-        i++;
-        int JmpToStart=output.size();
+        int JmpToStart = output.size();
         int buff;
         while(!input.get(i).getType().equals("L_F_B")){
             exprHandle();
@@ -64,17 +60,20 @@ public class RPN {
         buff=output.size();
         output.add(new TokenOperand("VAR"," "));
         output.add(new TokenOperator(0,LexemType.J_C.getType(),"!F"));
-        while(!input.get(i+1).getType().equals("R_F_B")){
-            if(input.get(i+1).getType().equals("CYCLE")){
-                i++;
-                cycleRPN();
-            }
-            if (input.get(i+1).getType().equals("PRINT")){
-                i++;
-                printHandle();
+        i++;
+        while(!input.get(i).getType().equals("R_F_B")){
+            switch (input.get(i).getType()) {
+                case "CYCLE":
+                    cycleRPN();
+                    break;
+                case "PRINT":
+                    printHandle();
+                    break;
+                default:
+                    exprHandle();
+                    break;
             }
             i++;
-            exprHandle();
         }
         output.add(new TokenOperand("DIGIT",Integer.toString(JmpToStart)));
         output.add(new TokenOperator(0,LexemType.JMP.getType(),"!"));
@@ -89,9 +88,7 @@ public class RPN {
             }
             i++;
         }
-        i++;
     }
-
     public ArrayList<Token> toRPN() {
         for(i = 0;i<input.size(); i++){
             switch (input.get(i).getType()) {

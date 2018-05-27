@@ -1,6 +1,4 @@
-package Handler;
-
-import Lexer.Token;
+package Lexer;
 
 public class TokenOperator extends Token {
     private int priority;

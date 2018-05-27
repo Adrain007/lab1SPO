@@ -19,9 +19,14 @@ public class Main{
         Parser1 parser = new Parser1(tokens);
         parser.parse();
         RPN rpn = new RPN(tokens);
+        /*int i = 0;
+        for(Token token: rpn.toRPN()){
+            System.out.print(i+"-"+token.getValue()+ "; ");
+            i++;
+        }
+        System.out.print("\n");*/
         StackMachine stackMachine = new StackMachine(rpn.toRPN());
         stackMachine.calculation();
-        stackMachine.printVar();
         long finish = System.nanoTime();
         System.out.println("\n\n"+"Execution time = "+((finish-start)/Math.pow(10,6))+" ms");
     }

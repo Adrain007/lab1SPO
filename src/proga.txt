@@ -1,5 +1,17 @@
-g type String;
 f type String;
-g := 90 - 78;
-g := 2 * g;
-f := g + 23-(f+5)/5+(8*(25 - g));
+a type String;
+r type String;
+while(a<5){
+    a := a+1;
+    f := f+1;
+    while(r<5){
+        r:=r+2;
+    }
+}
+d type String;
+d := 10;
+while(d>1){
+    d := d-1;
+}
+d := d + 8.9 * a;
+print (a, f, d, r);

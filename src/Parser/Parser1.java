@@ -56,7 +56,7 @@ public class Parser1 {
             } else{
                 throw new RuntimeException("RINAT sosi");
             }
-        }  else if(match("CYCLE")) {
+        } else if(match("CYCLE")) {
             cycle();
         } else if(match("PRINT")) {
             print();
