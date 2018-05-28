@@ -1,20 +1,9 @@
-f type String;
-a type String;
-r type String;
-print(a);
-while(a<5){
-    a := a+4;
-    f := 2+f;
-    while(r<5){
-        r:=r+2;
-        f:=f-2*r;
-        print (f);
-    }
-}
+j type List;
 d type String;
-d := 10;
-while(d>3){
-    d := d-1;
-}
-d := d + 8.9 * a;
-print (a, f, d, r);
+j.add(8);
+j.add(1);
+j.add(j.get(0));
+j.add(19);
+j.set(1, 0);
+d := j.get(j.get(1));
+print (d,j);

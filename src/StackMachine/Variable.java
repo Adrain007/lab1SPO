@@ -1,6 +1,6 @@
 package StackMachine;
 
-class Variable {
+class Variable extends VarList{
 
     private float value;
     private String type;
@@ -9,6 +9,7 @@ class Variable {
         this.value = value;
         this.type = type;
     }
+
     void setValue(float value){
         this.value = value;
     }

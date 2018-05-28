@@ -1,6 +1,8 @@
 package MyLinkedList;
 
-public class MyLinkedList {
+import StackMachine.VarList;
+
+public class MyLinkedList extends VarList {
     private Wrapper first;
     private Wrapper last;
     private int size = 0;

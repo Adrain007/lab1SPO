@@ -39,7 +39,7 @@ public class Lexer {
         switch (type) {
             case "DIGIT":
             case "VAR":
-            case "STRING":
+            case "TYPE":
                 tokenList.add(new TokenOperand(type, value));
                 break;
             case "SPACE":

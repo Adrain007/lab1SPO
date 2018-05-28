@@ -89,7 +89,7 @@ public class RPN {
             i++;
         }
     }
-    public ArrayList<Token> toRPN() {
+    public void toRPN() {
         for(i = 0;i<input.size(); i++){
             switch (input.get(i).getType()) {
                 case "CYCLE":
@@ -104,6 +104,8 @@ public class RPN {
             }
         }
         output.add(new TokenOperand("VAR","end point"));
+    }
+    public ArrayList<Token> getOutput(){
         return output;
     }
 }

@@ -5,8 +5,9 @@ import java.util.regex.Pattern;
 public enum LexemType {
     CYCLE("CYCLE",Pattern.compile("^while"),0),
     PRINT("PRINT",Pattern.compile("^print"),0),
-    TYPE("TYPE",Pattern.compile("^type"),1),
-    STRING("STRING",Pattern.compile("^String"),0),
+    TYPE_OP("TYPE_OP",Pattern.compile("^type"),1),
+    TYPE("TYPE",Pattern.compile("^String|List"),0),
+    LIST_METHOD("LIST_METHOD",Pattern.compile("^[.](add|get|remove|contains|set)"),5),
     DIGIT("DIGIT", Pattern.compile("^0|[1-9][0-9]*[.]?[0-9]*|0[.][0-9]*"),0),
     VAR("VAR", Pattern.compile("^[a-zA-Z]+[0-9]*[a-zA-Z]*"),0),
     COMP_OP("COMP_OP",Pattern.compile("^==|<|>"),1),
