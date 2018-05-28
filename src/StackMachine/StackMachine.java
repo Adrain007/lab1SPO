@@ -32,11 +32,13 @@ public class StackMachine {
 
     private float getOperand() {
         if (stackMachine.peek().getType().equals("VAR")) {
+            String var;
+            var = stackMachine.pop().getValue();
             try {
-                assignTo = variablesTable.get(stackMachine.pop().getValue());
+                assignTo = variablesTable.get(var);
                 return assignTo.getValue();
             } catch (NullPointerException e){
-                throw new NullPointerException("Variable '"+tokens.get(i-2).getValue()+"' is not initialized!!!");
+                throw new NullPointerException("Variable '"+var+"' is not initialized!!!");
             }
         } else {
             return Float.parseFloat(stackMachine.pop().getValue());
@@ -89,10 +91,7 @@ public class StackMachine {
             default:
                 break;
         }
-
-
     }
-
     private void binaryOp(String value) {
         switch (value) {
             case "!F": {
@@ -118,7 +117,11 @@ public class StackMachine {
                 break;
         }
     }
-    private void printVar(String string) {
-        System.out.println(variablesTable.get(string).getType() + " " + string + " := " + variablesTable.get(string).getValue());
+    private void printVar(String varName) {
+        try {
+            System.out.println(variablesTable.get(varName).getType() + " " + varName + " := " + variablesTable.get(varName).getValue());
+        } catch (NullPointerException e){
+            throw new NullPointerException("Variable '"+varName+"' is not initialized!!!");
+        }
     }
 }

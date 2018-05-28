@@ -1,16 +1,19 @@
 f type String;
 a type String;
 r type String;
+print(a);
 while(a<5){
-    a := a+1;
-    f := f+1;
+    a := a+4;
+    f := 2+f;
     while(r<5){
         r:=r+2;
+        f:=f-2*r;
+        print (f);
     }
 }
 d type String;
 d := 10;
-while(d>1){
+while(d>3){
     d := d-1;
 }
 d := d + 8.9 * a;
