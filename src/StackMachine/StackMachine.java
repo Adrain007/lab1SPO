@@ -106,13 +106,11 @@ public class StackMachine {
                 break;
             case "print":
                 Variable hyaf = variablesTable.get(stackMachine.peek().getValue());
-                if(hyaf == null){
-                    throw new NullPointerException("Variable "+stackMachine.peek().getValue()+" is not exist!!!");
-                }
-                else if (hyaf.getType().equals("List")) {
+                if (hyaf == null) {
+                    throw new NullPointerException("Variable " + stackMachine.peek().getValue() + " is not exist!!!");
+                } else if (hyaf.getType().equals("List")) {
                     printList(hyaf.getList(), stackMachine.pop().getValue());
-                }
-                else {
+                } else {
                     printVar(stackMachine.pop().getValue());
                 }
                 break;
@@ -139,18 +137,18 @@ public class StackMachine {
 
     private void printVar(String string) {
         try {
-            System.out.println(variablesTable.get(string).getType() + " " + string + " := " + variablesTable.get(string).getValue());
+            System.out.println(variablesTable.get(string).getType() + " " + string + " := " + variablesTable.get(string).getValue()+";");
         } catch (NullPointerException e) {
             throw new NullPointerException("Variable" + " " + string + " " + "is not initialized");
         }
     }
 
     private void printList(MyLinkedList list, String varName) {
-        System.out.print("Values of " + varName + ": ");
+        System.out.print("Values of '" + varName + "': ");
         for (int i = 0; i < list.size(); i++) {
             System.out.print("[" + list.get(i) + "]");
         }
-        System.out.print("\n");
+        System.out.print(";\n");
     }
 
     private void methodOp(String value) {
@@ -159,14 +157,15 @@ public class StackMachine {
         if (value.equals(".set")) {
             arg1 = Integer.parseInt(stackMachine.pop().getValue());
         }
-        Variable variable = variablesTable.get(stackMachine.peek().getValue());
+        String varName = stackMachine.peek().getValue();
+        Variable variable = variablesTable.get(varName);
         try {
             if (variable.getList() != null) {
                 list = variablesTable.get(stackMachine.pop().getValue()).getList();
             } else if (variable.getSet() != null) {
                 set = variablesTable.get(stackMachine.pop().getValue()).getSet();
             }
-        }catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             throw new RuntimeException("Cannot apply operation " + value + " to variable " + stackMachine.pop().getValue());
         }
 
@@ -187,10 +186,10 @@ public class StackMachine {
                 }
                 break;
             case ".contains":
-                if (variable.getList() != null){
-                    System.out.println("List contains '" + arg2 + "' is: " + list.contains(arg2));
+                if (variable.getList() != null) {
+                    System.out.println("List '" + varName + "' contains '" + arg2 + "' is: " + list.contains(arg2));
                 } else if (variable.getSet() != null) {
-                    System.out.println("HashSet contains '" + arg2 + "' is: " + set.contains(arg2));
+                    System.out.println("HashSet '" + varName + "' contains '" + arg2 + "' is: " + set.contains(arg2));
                 }
                 break;
             case ".get":
