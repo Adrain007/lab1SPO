@@ -27,9 +27,6 @@ public class Parser1 {
         if ((type.equals(current.getType()))) {
             pos++;
             return true;
-        } else if (current.getType().equals("SPACE")) {
-            pos++;
-            return match(type);
         } else {
             return false;
         }
@@ -51,7 +48,7 @@ public class Parser1 {
                 type();
             } else if (match("ASSIGN_OP")) {
                 assign();
-            } else if(match("LIST_METHOD")){
+            } else if(match("METHOD")){
                 method();
             } else {
                 throw new RuntimeException("RINAT sosi");

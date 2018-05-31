@@ -43,6 +43,7 @@ public class Lexer {
                 tokenList.add(new TokenOperand(type, value));
                 break;
             case "SPACE":
+                break;
             case "END":
             case "COMA":
             case "CYCLE":

@@ -1,160 +1,156 @@
 package StackMachine;
 
+import Lexer.Token;
+import MyHashSet.MyHashSet;
+import MyLinkedList.MyLinkedList;
 import Lexer.TokenOperand;
 import Lexer.TokenOperator;
-import Lexer.Token;
-import MyLinkedList.MyLinkedList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Stack;
 
 public class StackMachine {
     private ArrayList<Token> tokens;
     private Stack<Token> stackMachine = new Stack<>();
-    private HashMap<String, VarList> variablesTable = new HashMap<>();
+    private HashMap<String, Variable> variablesTable = new HashMap<>();
     private static int i;
     private static Variable assignTo;
-    private static MyLinkedList list;
+    private MyLinkedList list;
+    private MyHashSet set;
 
     public StackMachine(ArrayList<Token> tokens1) {
         this.tokens = tokens1;
     }
 
     public void calculation() {
-        for (i = 0; i < tokens.size() - 1; i++) {
-            if (tokens.get(i).getValue().equals("end point")) {
-                break;
-            } else if (tokens.get(i) instanceof TokenOperand) {
+        for (i = 0; i < tokens.size() - 1; i++)
+            if (tokens.get(i) instanceof TokenOperand) {
                 stackMachine.push(tokens.get(i));
             } else if (tokens.get(i) instanceof TokenOperator) {
                 String value = tokens.get(i).getValue();
-                if (tokens.get(i).getType().equals("LIST_METHOD")) {
+                if (tokens.get(i).getType().equals("METHOD") || value.equals(".get"))
                     methodOp(value);
-                } else {
+                else
                     binaryOp(value);
-                }
-            }
-        }
+            } else if (tokens.get(i).getValue().equals("end point")) break;
     }
-
 
     private float getOperand() {
         if (stackMachine.peek().getType().equals("VAR")) {
             String var = stackMachine.pop().getValue();
             try {
-                if (variablesTable.get(var) instanceof Variable) {
-                    assignTo = (Variable) variablesTable.get(var);
-                    return assignTo.getValue();
-                }
+                assignTo = variablesTable.get(var);
+                return assignTo.getValue();
             } catch (NullPointerException e) {
-                throw new NullPointerException("Variable '" + var + "' is not initialized!!!");
+                throw new NullPointerException("Variable " + var + " is not initialized");
             }
+
         } else {
             return Float.parseFloat(stackMachine.pop().getValue());
         }
-        return 234;
+
     }
 
-    private void switchOp(float arg2, float arg1, String value) {
+    private void switchOp(float a, float b, String value) {
         float result;
+        Integer compare;
         switch (value) {
             case "+":
-                result = arg1 + arg2;
+                result = b + a;
                 stackMachine.push(new TokenOperand("DIGIT", Float.toString(result)));
                 break;
             case "-":
-                result = arg1 - arg2;
+                result = b - a;
                 stackMachine.push(new TokenOperand("DIGIT", Float.toString(result)));
                 break;
             case "/":
-                result = arg1 / arg2;
+                result = b / a;
                 stackMachine.push(new TokenOperand("DIGIT", Float.toString(result)));
                 break;
             case "*":
-                result = arg1 * arg2;
+                result = b * a;
                 stackMachine.push(new TokenOperand("DIGIT", Float.toString(result)));
                 break;
             case ":=":
-                assignTo.setValue(arg2);
+                assignTo.setValue(a);
                 break;
             case "==":
-                if (arg1 == arg2) {
-                    stackMachine.push(new TokenOperand("DIGIT", "1"));
-                } else {
-                    stackMachine.push(new TokenOperand("DIGIT", "0"));
-                }
+                compare = Boolean.compare(b == a, false);
+                stackMachine.push(new TokenOperand("DIGIT", compare.toString()));
                 break;
             case ">":
-                if (arg1 > arg2) {
-                    stackMachine.push(new TokenOperand("DIGIT", "1"));
-                } else {
-                    stackMachine.push(new TokenOperand("DIGIT", "0"));
-                }
+                compare = Boolean.compare(b > a, false);
+                stackMachine.push(new TokenOperand("DIGIT", compare.toString()));
                 break;
             case "<":
-                if (arg1 < arg2) {
-                    stackMachine.push(new TokenOperand("DIGIT", "1"));
-                } else {
-                    stackMachine.push(new TokenOperand("DIGIT", "0"));
-                }
+                compare = Boolean.compare(b < a, false);
+                stackMachine.push(new TokenOperand("DIGIT", compare.toString()));
                 break;
             default:
                 break;
         }
+
+
     }
 
+    // a b +
     private void binaryOp(String value) {
         switch (value) {
-            case "!F": {
-                int buff = Integer.parseInt(stackMachine.pop().getValue());
-                if (stackMachine.pop().getValue().equals("0")) {
-                    i = buff - 1;
-                }
+            case "!F":
+                int goTo = Integer.parseInt(stackMachine.pop().getValue());
+                i = stackMachine.pop().getValue().equals("0") ? goTo - 1 : i;
                 break;
-            }
             case "!":
                 i = Integer.parseInt(stackMachine.pop().getValue()) - 1;
                 break;
             case "print":
-                if(variablesTable.get(stackMachine.peek().getValue()) instanceof Variable) {
+                Variable hyaf = variablesTable.get(stackMachine.peek().getValue());
+                if(hyaf == null){
+                    throw new NullPointerException("Variable "+stackMachine.peek().getValue()+" is not exist!!!");
+                }
+                else if (hyaf.getType().equals("List")) {
+                    printList(hyaf.getList(), stackMachine.pop().getValue());
+                }
+                else {
                     printVar(stackMachine.pop().getValue());
-                }else if(variablesTable.get(stackMachine.peek().getValue()) instanceof MyLinkedList) {
-                    String varName = stackMachine.pop().getValue();
-                    list =(MyLinkedList) variablesTable.get(varName);
-                    printList(list,varName);
                 }
                 break;
-            case "type": {
+            case "type":
                 String buff = stackMachine.pop().getValue();
-                if (buff.equals("String")) {
-                    variablesTable.put(stackMachine.pop().getValue(), new Variable(0, buff));
-                } else if (buff.equals("List")) {
-                    variablesTable.put(stackMachine.pop().getValue(), new MyLinkedList());
+                switch (buff) {
+                    case "List":
+                        variablesTable.put(stackMachine.pop().getValue(), new Variable(buff, new MyLinkedList()));
+                        break;
+                    case "HashSet":
+                        variablesTable.put(stackMachine.pop().getValue(), new Variable(buff, new MyHashSet()));
+                        break;
+                    default:
+                        variablesTable.put(stackMachine.pop().getValue(), new Variable(buff, 0));
+                        break;
                 }
                 break;
-            }
+
             default:
                 switchOp(getOperand(), getOperand(), value);
                 break;
         }
     }
 
-    private void printVar(String varName) {
+    private void printVar(String string) {
         try {
-            if (variablesTable.get(varName) instanceof Variable) {
-                Variable variable = (Variable) variablesTable.get(varName);
-                System.out.println(variable.getType() + " " + varName + " := " + variable.getValue());
-            }
+            System.out.println(variablesTable.get(string).getType() + " " + string + " := " + variablesTable.get(string).getValue());
         } catch (NullPointerException e) {
-            throw new NullPointerException("Variable '" + varName + "' is not initialized!!!");
+            throw new NullPointerException("Variable" + " " + string + " " + "is not initialized");
         }
     }
 
     private void printList(MyLinkedList list, String varName) {
-        System.out.print("Values of "+varName+": ");
+        System.out.print("Values of " + varName + ": ");
         for (int i = 0; i < list.size(); i++) {
-            System.out.print("[" + list.get(i)+"]");
+            System.out.print("[" + list.get(i) + "]");
         }
-
+        System.out.print("\n");
     }
 
     private void methodOp(String value) {
@@ -163,30 +159,59 @@ public class StackMachine {
         if (value.equals(".set")) {
             arg1 = Integer.parseInt(stackMachine.pop().getValue());
         }
-        if (variablesTable.get(stackMachine.peek().getValue()) instanceof MyLinkedList) {
-            list = (MyLinkedList) variablesTable.get(stackMachine.pop().getValue());
-        }
-        switch (value) {
-            case ".add": {
-                list.add(arg2);
-                break;
+        Variable variable = variablesTable.get(stackMachine.peek().getValue());
+        try {
+            if (variable.getList() != null) {
+                list = variablesTable.get(stackMachine.pop().getValue()).getList();
+            } else if (variable.getSet() != null) {
+                set = variablesTable.get(stackMachine.pop().getValue()).getSet();
             }
+        }catch (NullPointerException e) {
+            throw new RuntimeException("Cannot apply operation " + value + " to variable " + stackMachine.pop().getValue());
+        }
+
+        switch (value) {
+            case ".add":
+                if (variable.getList() != null) {
+                    list.add(arg2);
+                } else if (variable.getSet() != null) {
+                    set.add(arg2);
+                }
+                break;
+
             case ".remove":
-                list.remove((int)arg2);
+                if (variable.getList() != null) {
+                    list.remove(arg2);
+                } else if (variable.getSet() != null) {
+                    set.remove(arg2);
+                }
                 break;
             case ".contains":
-                list.contains(arg2);
+                if (variable.getList() != null){
+                    System.out.println("List contains '" + arg2 + "' is: " + list.contains(arg2));
+                } else if (variable.getSet() != null) {
+                    System.out.println("HashSet contains '" + arg2 + "' is: " + set.contains(arg2));
+                }
                 break;
-            case ".get": {
-                TokenOperand token = new TokenOperand("DIGIT", String.valueOf(list.get((int) arg2)));
-                stackMachine.push(token);
+            case ".get":
+                try {
+                    TokenOperand token = new TokenOperand("DIGIT", String.valueOf(list.get((int) arg2)));
+                    stackMachine.push(token);
+                } catch (NullPointerException e) {
+                    throw new NullPointerException("Cannot apply operation " + value + " to variable type HashSet");
+                }
                 break;
-            }
+
             case ".set":
-                list.set(arg1, arg2);
+                try {
+                    list.set(arg1, arg2);
+                } catch (NullPointerException e) {
+                    throw new NullPointerException("Cannot apply operation " + value + " to variable type HashSet");
+                }
                 break;
             default:
                 break;
         }
     }
+
 }

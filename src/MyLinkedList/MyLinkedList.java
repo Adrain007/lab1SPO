@@ -1,8 +1,6 @@
 package MyLinkedList;
 
-import StackMachine.VarList;
-
-public class MyLinkedList extends VarList {
+public class MyLinkedList {
     private Wrapper first;
     private Wrapper last;
     private int size = 0;
@@ -53,7 +51,7 @@ public class MyLinkedList extends VarList {
         return getWrapper(index).getItem();
     }
 
-    public void remove(int index) {
+    private void remove(int index) {
         Wrapper wrapper = getWrapper(index);
         Wrapper prev = wrapper.getPrev();
         Wrapper next = wrapper.getNext();
@@ -103,15 +101,21 @@ public class MyLinkedList extends VarList {
         if (!isElementIndex(index))
             throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
     }
+    public void replace(Object object){
+        int index=getObjectIndex(object);
+        set(index,object);
+    }
 
     private int getObjectIndex(Object o) {
-        Wrapper x = first;
         int count = 0;
-        while (x.getItem() != o) {
-            x = x.getNext();
-            count++;
-            if (count == size) {
-                break;
+        Wrapper x = first;
+        if(size()!=0) {
+            while (!x.getItem().equals(o)) {
+                x = x.getNext();
+                count++;
+                if (count == size) {
+                    break;
+                }
             }
         }
         return count < size ? count : -1;

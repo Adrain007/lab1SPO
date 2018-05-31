@@ -1,160 +1,138 @@
 package Parser;
 
 import Lexer.Token;
+
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 public class Parser {
-    private static ArrayList<Token> tokens;
-    private static Token currentToken;
-    private static int i = 0;
 
-    public Parser() {
+    private static final Token EOF = new Token("EOF", "");
+
+    private final ArrayList<Token> tokens;
+
+    private int pos;
+
+    private final int size;
+
+    public Parser(ArrayList<Token> token) {
+        this.tokens = token;
+        size = tokens.size();
+
     }
-
-    private void match() {
-        currentToken = tokens.get(i);
-        ++i;
-    }
-
-    private void check(String s) throws Exception {
-        match();
-        if (!currentToken.getType().equals(s)) {
-            throw new Exception(s + " expected, but " + currentToken.getType() + " found!!!");
-        }
-    }
-
-    public void parse(ArrayList<Token> token) {
-        tokens = token;
+    public void parse(){
         lang();
     }
 
+    private Token get(int relative) {
+        final int position = pos + relative;
+        if (position >= size) return EOF;
+        return tokens.get(position);
+    }
+
+    private boolean match(String type, int args) {
+        Pattern pattern;
+        Matcher matcher;
+        StringBuilder match=new StringBuilder();
+        Token current;
+        for (int i = 0; i < args; i++) {
+            current = get(i);
+            match.append(current.getType()).append(" ");
+        }
+        match.deleteCharAt(match.length() - 1);
+
+        pattern = Pattern.compile(type);
+        matcher = pattern.matcher(match.toString());
+        if (matcher.matches()) {
+            pos += args;
+            return true;
+        } else
+            return false;
+    }
+
     private void lang() {
-        while(i < tokens.size() - 1) {
-            expr();
-        }
-    }
-
-    private void expr() {
-        try {
-            assign();
-        } catch (Exception var2) {
-            --i;
-            cycle();
-        }
-
-    }
-
-    private void assign() throws Exception {
-        try {
-            check("VAR");
-            check("ASSIGN_OP");
-            assign_value();
-        } catch (Exception var2) {
-            throw new Exception("Ne assign!!!");
-        }
-    }
-
-    private void assign_value() {
-        math_expr();
-        for(currentToken = tokens.get(i); !currentToken.getType().equals("END") && !currentToken.getType().equals("R_B"); currentToken = tokens.get(i)) {
-            try {
-                check("OP");
-                math_expr();
-            } catch (Exception var3) {
-                var3.printStackTrace();
-            }
-        }
-        if (currentToken.getType().equals("END") && (tokens.get(0)).getType().equals("CYCLE")) {
-            ++i;
-        }
-    }
-
-    private void math_expr() {
-        try {
-            add_expr();
-        } catch (Exception var2) {
-            math_br();
-        }
-
-    }
-
-    private void add_expr() throws Exception {
-        try {
-            value();
-        } catch (Exception var3) {
-            throw new Exception("ne add_expr!!!");
-        }
-
-        for(currentToken = tokens.get(i); !currentToken.getType().equals("END") && !currentToken.getType().equals("R_B"); currentToken = tokens.get(i)) {
-            try {
-                check("OP");
-                value();
-            } catch (Exception var2) {
-                throw new Exception(".............");
+        while (get(0) != EOF) {
+            if (!expr()) {
+                throw new RuntimeException("Syntax error");
             }
         }
 
     }
 
-    private void value() throws Exception {
-        try {
-            check("VAR");
-        } catch (Exception var4) {
-            --i;
+    private boolean expr() {
 
-            try {
-                check("DIGIT");
-            } catch (Exception var3) {
-                --i;
-                throw new Exception("ne value!!!");
-            }
-        }
+        return (match("VAR ASSIGN_OP", 2) && assign()) ||
+                (match("VAR TYPE_OP", 2) && type()) ||
+                (match("CYCLE", 1) && cycle()) ||
+                (match("PRINT", 1) && print())||
+                (match("VAR (METHOD|GET)",2)&&method());
 
     }
 
-    private void math_br() {
-        try {
-            check("L_B");
-            assign_value();
-            check("R_B");
-        } catch (Exception var2) {
-            var2.printStackTrace();
-        }
+    private boolean assign() {
+        return assign_value() && match("END", 1);
+    }
+
+    private boolean assign_value() {
+        return math_expr() && (!match("OP_DIV_MUL|OP_ADD_SUB", 1) || assign_value());
+    }
+
+    private boolean math_expr() {
+        return add_expr() || math_br();
+    }
+
+    private boolean add_expr()  {
+        return value() && (!match("OP_DIV_MUL|OP_ADD_SUB", 1) || add_expr());
+    }
+
+    private boolean math_br() {
+        return match("L_B", 1) && assign_value() && match("R_B", 1);
+    }
+
+    private boolean value() {
+        return methodget()||match("VAR|DIGIT",1);
+    }
+    private boolean methodget(){
+        return match("VAR GET",2) &&match("L_B",1)&&value()&&match("R_B",1);
+
+    }
+    //a.add(8)||a.set(a,9);
+    private boolean method(){
+        return  (get(-1).getValue().equals(".set"))&&match("L_B",1)
+                &&value()&&match("COMA",1)&&value()&&match("R_B END",2)||
+                match("L_B",1) &&value()&&match("R_B END",2);
+
 
     }
 
-    private void cycle() {
-        try {
-            check("CYCLE");
-        } catch (Exception var2) {
-            var2.printStackTrace();
-        }
-        comp();
-        body();
+    private boolean cycle() {
+        return compare()& body();
     }
 
-    private void comp() {
-        try {
-            check("L_B");
-            check("VAR");
-            check("COMP_OP");
-            value();
-            check("R_B");
-        } catch (Exception var2) {
-            var2.printStackTrace();
-        }
-
+    private boolean compare() {
+        return match("L_B VAR COMP_OP DIGIT R_B", 5);
+    }
+    private boolean cycleBody(){
+        return (match("R_F_B",1))||(expr()&&cycleBody());
     }
 
-    private void body() {
-        try {
-            check("L_F_B");
-            while(!(tokens.get(i).getType().equals("R_F_B"))) {
-                expr();
-            }
-            check("R_F_B");
-        } catch (Exception var2) {
-            var2.printStackTrace();
-        }
+
+    private boolean body() {
+        return match("L_F_B", 1) &&(match("R_F_B", 1)|| cycleBody());
+    }
+
+    private boolean printBody() {
+        return value() && (!match("COMA", 1) || printBody());
+    }
+
+    private boolean print() {
+
+        return match("L_B", 1) && printBody() && match("R_B END", 2);
+    }
+
+    private boolean type() {
+        return match("TYPE END", 2);
     }
 }

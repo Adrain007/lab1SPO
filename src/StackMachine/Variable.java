@@ -1,22 +1,41 @@
 package StackMachine;
 
-class Variable extends VarList{
+import MyHashSet.MyHashSet;
+import MyLinkedList.MyLinkedList;
 
+
+public class Variable {
     private float value;
     private String type;
+    private MyLinkedList list;
+    private MyHashSet set;
 
-    Variable(int value, String type){
-        this.value = value;
+    Variable(String type, int value) {
         this.type = type;
-    }
-
-    void setValue(float value){
         this.value = value;
     }
-    float getValue(){
+
+    Variable(String type, MyLinkedList list) {
+        this.type = type;
+        this.list=list;
+    }
+    Variable(String type, MyHashSet hashSet){
+        this.type=type;
+        this.set=hashSet;
+    }
+
+    float getValue() {
         return value;
     }
-    String getType(){
+    MyLinkedList getList(){
+        return list;}
+
+    public String getType() {
         return type;
     }
+
+    void setValue(float value) {
+        this.value = value;
+    }
+    MyHashSet getSet(){return set;}
 }
