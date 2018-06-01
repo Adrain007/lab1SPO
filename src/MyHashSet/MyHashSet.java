@@ -5,7 +5,7 @@ import MyLinkedList.MyLinkedList;
 
 public class MyHashSet {
 
-    private int size = 1 << 4;
+    private int size = 16;
 
     private MyLinkedList table[];
 
@@ -23,51 +23,46 @@ public class MyHashSet {
         return h & (length - 1);
     }
 
-    /*private void addTable(int index,Object object){
-        for(int i=0;i<table[index].size();i++){
-            int hash=hash(table[index].get(i).hashCode());
-            if(hash==hash(object.hashCode())&&table[index].contains(object)){
-                table[index].replace(object);
-                return;
+    private boolean changeTable(int index, Object object, String value) {
+        if (table[index] != null) {
+            for (int i = 0; i < table[index].size(); i++) {
+                int hash = hash(table[index].get(i).hashCode());
+                if (hash == hash(object.hashCode()) && table[index].contains(object)) {
+                    switch (value) {
+                        case "add":
+                            table[index].replace(object);
+                            return true;
+                        case "remove":
+                            table[index].remove(object);
+                            return true;
+                        case "contains":
+                            return table[index].contains(object);
+                        default:
+                            break;
+                    }
+                }
             }
         }
-        table[index].add(object);
-
-    }*/
+        return false;
+    }
 
     public void add(Object object) {
-        if (object == null)
-            throw new NullPointerException("daldja");
-        else {
-            int index = indexFor(hash(object.hashCode()), size);
-
-            if (table[index] != null && table[index].contains(object)) {
-                table[index].replace(object);
-            } else {
-                table[index] = new MyLinkedList();
-                table[index].add(object);
-            }
+        int index = indexFor(hash(object.hashCode()), size);
+        if (!changeTable(index, object, "add")) {
+            table[index] = new MyLinkedList();
+            table[index].add(object);
         }
     }
 
     public void remove(Object object) {
         int index = indexFor(hash(object.hashCode()), size);
-        if (table[index] != null) {
-            if (table[index].contains(object)) {
-                table[index].remove(object);
-            }
-        }else {
-            System.out.println("Object '"+object+"' is not found!!!");
+        if (!changeTable(index, object, "remove")) {
+            System.out.println("Object '" + object + "' is not found!!!");
         }
-
     }
-
 
     public boolean contains(Object object) {
         int index = indexFor(hash(object.hashCode()), size);
-        if (table[index] != null) {
-            return table[index].contains(object);
-        } else
-            return false;
+        return changeTable(index, object, "contains");
     }
 }

@@ -10,7 +10,7 @@ public class Lexer {
     static private int n = 0;
     static private ArrayList<Token> tokenList = new ArrayList<>();
 
-    private void parse(String string){
+    private void match(String string){
         while(string.length()!=0) {
             for(LexemType lexemType: LexemType.values()) {
                 Pattern pattern = lexemType.getPattern();
@@ -58,8 +58,7 @@ public class Lexer {
     }
 
     public ArrayList<Token> getTokenList(String s){
-        parse(s);
+        match(s);
         return tokenList;
     }
-
 }

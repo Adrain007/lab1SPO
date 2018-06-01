@@ -48,7 +48,7 @@ public class Parser1 {
                 type();
             } else if (match("ASSIGN_OP")) {
                 assign();
-            } else if(match("METHOD")){
+            } else if(match("METHOD")||match("GET")){
                 method();
             } else {
                 throw new RuntimeException("RINAT sosi");
@@ -121,8 +121,7 @@ public class Parser1 {
     }//a=45+g.get(9)-23;
 
     private void meth_br() {
-        if(get(0).getValue().equals(".get")){
-            pos++;
+        if(match("GET")){
             if(match("L_B")) {
                 value();
             }

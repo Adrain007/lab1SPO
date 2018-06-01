@@ -11,9 +11,10 @@ print (l);
 a type Float;
 a:=l.get(1)*25 - l.get(0);
 l.add(343);
-o.add(343);
+o.add(35);
 o.add(23);
-o.contains(23);
+o.add(23);
+o.contains(343);
 o.remove(23);
 o.contains(23);
 

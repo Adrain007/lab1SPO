@@ -1,6 +1,6 @@
 import Lexer.Lexer;
 
-import Parser.Parser1;
+import Parser.*;
 import Lexer.Token;
 import RPN.RPN;
 import StackMachine.StackMachine;

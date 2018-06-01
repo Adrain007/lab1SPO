@@ -137,7 +137,7 @@ public class StackMachine {
 
     private void printVar(String string) {
         try {
-            System.out.println(variablesTable.get(string).getType() + " " + string + " := " + variablesTable.get(string).getValue()+";");
+            System.out.println(variablesTable.get(string).getType() + " " + string + " := " + variablesTable.get(string).getValue() + ";");
         } catch (NullPointerException e) {
             throw new NullPointerException("Variable" + " " + string + " " + "is not initialized");
         }
@@ -193,18 +193,20 @@ public class StackMachine {
                 }
                 break;
             case ".get":
-                try {
+                if (variable.getList() != null) {
                     TokenOperand token = new TokenOperand("DIGIT", String.valueOf(list.get((int) arg2)));
                     stackMachine.push(token);
-                } catch (NullPointerException e) {
+                } else if (variable.getSet() != null) {
                     throw new NullPointerException("Cannot apply operation " + value + " to variable type HashSet");
                 }
+
                 break;
 
             case ".set":
-                try {
+
+                if (variable.getList() != null) {
                     list.set(arg1, arg2);
-                } catch (NullPointerException e) {
+                } else if (variable.getSet() != null) {
                     throw new NullPointerException("Cannot apply operation " + value + " to variable type HashSet");
                 }
                 break;
